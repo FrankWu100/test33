@@ -1,0 +1,286 @@
+
+
+
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=big5">
+<title>個人郵件明細</title>
+<body bgcolor="#ffffff">
+
+
+<!------------------------->
+<!--引用公用頁首,並傳入參數-->
+<!------------------------->
+
+  
+<HEAD>
+<!--避免中文錯誤-->
+<meta http-equiv="Content-Type" content="text/html; charset=big5">
+<script language=javascript src="/webPublic/jsFunction.js" ></script>
+<script language=javascript>
+<!--
+ //設定顏色
+ lvColor="#5A5A96";
+ lvVisitedColor="#D7559C";
+ lvMouseOverColor="#6077C6";
+ lvBackgroundImg="/webPublic/images/SubMenuBg.jpg";
+
+
+/*------------------設定功能選單狀態-------------------*/
+function gfSetMenuStyle(MainMenuIndex,SubMenuIndex) { 
+ 
+   /*----設定主功能選單初始狀態----*/
+   //for (tagObj in document.all.tags("td")) 
+   //for (tagObj in document.getElementsByTagName("td")) 
+   var td_objcol = document.getElementsByTagName("td");
+   for(i=0; i < td_objcol.length; i++)
+   {
+	 //主功能選單
+	 id_str = td_objcol[i].id;
+	 if (id_str.substr(0,8) == "MainMenu")
+	 {
+ 	    //document.getElementById(tagObj).style.color=lvColor;
+ 	    //document.getElementById(tagObj).style.cursor="pointer";		
+     	//document.getElementById(tagObj).style.backgroundImage="none";
+ 	    td_objcol[i].style.color=lvColor;
+ 	    if (document.all)
+ 	    	td_objcol[i].style.cursor="pointer";
+ 	    else
+ 	    	td_objcol[i].style.cursor="pointer";
+     	td_objcol[i].style.backgroundImage="none";
+	 }
+   }
+
+   /*----設定子層功能選單初始狀態----*/
+   //for (tagObj in document.all.tags("span")) 
+   var span_objcol = document.getElementsByTagName("span");
+
+   //for (tagObj in document.getElementsByTagName("span"))
+   for(i=0; i < span_objcol.length; i++) 
+   {
+   	  id_str = span_objcol[i].id;
+     //子層功能選單群組,預設關閉
+     
+     if (id_str.substr(0,12) == "SubMenuGroup")
+	 { 
+	 	
+       //document.getElementById(tagObj).style.display = "none";
+       //document.getElementById(tagObj).style.cursor="pointer";
+        span_objcol[i].style.display ="none";
+        if (document.all)
+        	span_objcol[i].style.cursor="pointer";
+        else
+        	span_objcol[i].style.cursor="pointer";
+ 
+     }
+	 //子層功能選單
+	 else if (id_str.substr(0,7) == "SubMenu")
+	 {
+	   span_objcol[i].style.color=lvColor;
+	   if (document.all)
+ 	   	span_objcol[i].style.cursor="pointer";
+ 	   else
+ 	   	span_objcol[i].style.cursor="pointer";
+       //document.getElementById(tagObj).style.color=lvColor;
+       //document.getElementById(tagObj).style.cursor="pointer";
+	 }
+   }
+
+   /*----將SubMenuLeft移到滑鼠指到的主功能選項下方,使滑鼠移動到該主功能選項下方時可以恢復選單狀態----*/
+   if (document.getElementById("MainMenu"+MainMenuIndex) && document.getElementById("SubMenuLeft"))
+   {
+	  var lvMainMenuWidth=document.getElementById("MainMenu"+MainMenuIndex).offsetWidth;
+      var lvMainLeft=document.getElementById("MainMenu"+MainMenuIndex).offsetLeft;
+	  document.getElementById("SubMenuLeft").style.width=lvMainMenuWidth;  
+	  document.getElementById("SubMenuLeft").style.left=lvMainLeft;  
+   }
+
+   /*----開啟滑鼠指到or目前已點選的子層功能選單----*/
+   gfShowSubMenu (MainMenuIndex);
+   if (isNaN(eval(MainMenuIndex))==true)
+   {
+       gfShowSubMenu ("3");
+   }
+
+   /*----開啟滑鼠指到or目前已點選的主功能選項/子層功能選單/子層功能選項狀態----*/
+   gfChgMenuStyle(MainMenuIndex,SubMenuIndex);
+   gfChgMenuStyle("3","");
+}
+
+/*-------開啟滑鼠指到or目前點選的子層功能選單-------*/
+function gfShowSubMenu (MenuIndex)
+{
+   //開啟滑鼠指到的子層功能選單
+   if (document.getElementById("SubMenuGroup"+MenuIndex))
+   {  
+      document.getElementById("SubMenuGroup"+MenuIndex).style.display='inline';
+	  //指定位置-子層功能選單寬度vs.功能列寬度:
+	  //1.未超過:則對齊該主功能選項
+	  //2.超過:則對齊功能列左邊
+	  var lvMenuBarWidth=document.getElementById("MenuBar").offsetWidth;
+      var lvMainLeft=document.getElementById("MainMenu"+MenuIndex).offsetLeft;
+      var lvSubWidth=document.getElementById("SubMenuGroup"+MenuIndex).offsetWidth;
+      document.getElementById("SubMenuLeft").style.width=5;  
+	  //1.未超過:則對齊該主功能選項	  
+	  if (lvMainLeft+lvSubWidth <= lvMenuBarWidth)
+	  {
+	     document.getElementById("SubMenuGroup"+MenuIndex).style.left=lvMainLeft-17;
+		 //SubMenuLeft 起始點於開啟的SubMenuGroup左邊5px處
+		 document.getElementById("SubMenuLeft").style.left=(lvMainLeft-17)-5;
+		 //SubMenuRight 起始點於開啟的SubMenuGroup右邊5px處
+		 document.getElementById("SubMenuRight").style.left=(lvMainLeft+lvSubWidth)+5;
+      }
+	  //2.超過:則對齊功能列左邊
+	  else
+	  {
+	     document.getElementById("SubMenuGroup"+MenuIndex).style.left=lvMenuBarWidth-lvSubWidth;
+		 //SubMenuLeft 起始點於開啟的SubMenuGroup右邊5px處
+		 document.getElementById("SubMenuLeft").style.left=lvSubWidth+5;
+		 //SubMenuRight 起始點於開啟的SubMenuGroup右邊5px處
+		 document.getElementById("SubMenuRight").style.left=lvSubWidth+5;	         		 
+      }
+   }
+}
+
+/*-------設定滑鼠指到or目前點選的主功能選項/子層功能選單/子層功能選項狀態-------*/
+function gfChgMenuStyle(MainIndex,SubIndex)
+{
+   /*----設定主功能選項狀態----*/
+   if (document.getElementById("MainMenu"+MainIndex))
+   {
+     //滑鼠指到的字體顏色
+     if (MainIndex!="3")
+	 {
+	    document.getElementById("MainMenu"+MainIndex).style.color=lvMouseOverColor;
+     }
+	 //目前點選的字體顏色
+	 else
+	 {
+	    document.getElementById("MainMenu"+MainIndex).style.color=lvVisitedColor;
+	 }
+ 	 document.getElementById("MainMenu"+MainIndex).style.backgroundImage="url('"+lvBackgroundImg+"')";
+   }
+
+   /*----設定子層功能選單狀態----*/
+   if (document.getElementById("SubMenuGroup"+MainIndex))
+   {
+     document.getElementById("SubMenuGroup"+MainIndex).style.backgroundImage="url('"+lvBackgroundImg+"')";
+   }
+
+   /*----設定子層功能選項狀態----*/
+   if (document.getElementById("SubMenu"+SubIndex))
+   {
+     //滑鼠指到的字體顏色
+     if (SubIndex!="")
+	 {
+        document.getElementById("SubMenu"+SubIndex).style.color=lvMouseOverColor;
+     }
+	 //目前點選的字體顏色
+	 else
+	 {
+	    document.getElementById("SubMenu"+SubIndex).style.color=lvVisitedColor;
+	 }
+   }
+}
+//-->
+</SCRIPT>
+</HEAD>
+
+<body bgcolor="#FFFFFF">  <!--94/04/25 abby-->
+<!--引用共同的css-->
+
+<link href="/webPublic/pubCss.css" rel="stylesheet" type="text/css">
+
+<!-- 標頭-->
+<table id="tbTitle" width="100%" border="0" align="center" cellspacing=0 cellpadding=0 class="pubContent">
+	<!--顯示標題及子標題-->
+    <tr onMouseOver="gfShowSubMenu('','')">
+      <td>&nbsp;</td>
+      <td class="pubProjTitle" width="49%" rowspan="2" nowrap><b><span><img src="/webPublic/images/titleItem.gif">
+	  個人郵件明細</span></b></td>
+      <td colspan="2">&nbsp;</td>
+    </tr>
+
+	<!--顯示連結-->
+    <tr onMouseOver="gfSetMenuStyle('','')">
+      <td width="3%">&nbsp;</td>
+      <td id="tdRightLink" width="43%" align="right" class="pubContent">
+      | <a class='headerA' href="javascript:window.history.back();">回上頁</a>|
+	  </td>
+      <td width="8">&nbsp;</td>
+    </tr>
+
+	<!--顯示功能選單-->
+	
+</table>
+
+<!--顯示分隔線-->
+<table id="tbLine" onMouseOver="gfSetMenuStyle('','')" width="98%" border="0" align="center" cellspacing=0 cellpadding=0>
+<tr><td align="center" valign="top" width='100%' height='10' background="/webPublic/images/pointLine.gif"></td>
+</tr>
+</table>
+<span id="msgs"></span>
+<SCRIPT LANGUAGE="JavaScript">
+<!--
+gfSetMenuStyle("3","");
+//點選指定的功能選單
+gfClickMenu();
+//-->
+</script>
+
+
+<!------------------------->
+<!--內文開始              -->
+<!------------------------->
+<p>
+<table width='80%' border='0' cellspacing='0' bordercolor='#0099CC' align='center' class='pubBlueTable'>
+<tr>
+<td>吳家漢 您好：</td>
+</tr>
+<tr>
+<td>您有下列郵件尚未領取</td>
+</tr>
+</table> 
+<br>
+<table width='80%' border='1' cellspacing='0' bordercolor='#0099CC' align='center' class='pubBlueTable'>
+<tr class='pubBlueTdTitle'><td align='center'>郵件編號</td><td align='center'>郵件類型</td><td align='center'>寄信者位置</td><td align='center'>到件日期</td>
+</tr>
+<tr><td align='center' >19658</td><td align='center' >信函(掛號)</td><td align='center' >中央大學</td><td align='center' >2013/11/11</td></tr>
+</table> 
+<br>
+<table width='80%' border='0' cellspacing='0' bordercolor='#0099CC' align='center' class='pubBlueTable'>
+<tr>
+<td>
+	*請盡速到 <span class='pubImportantMsg'>大典館1樓收發室</span> 領取，領取時請務必攜帶<span class='pubImportantMsg'>學生證/教職員證</span>。<br>
+	*若有任何疑問，請撥<span class='pubImportantMsg'>分機13111</span> 詢問
+
+</td>
+</tr>
+</table> 
+</body>
+</html>
+
+<p><p>
+<!--內文結束---------------->
+
+
+<!------------------------->
+<!--引用公用頁尾          -->
+<!------------------------->
+
+
+<!--顯示分隔線-->
+<table id="tbLine_Footer" width="98%" border="0" align="center" cellspacing=0 cellpadding=0>
+<tr><td align="center" valign="top" width='100%' height='10' background="/webPublic/images/pointLine.gif"></td>
+</tr>
+</table>
+
+<!--顯示說明-->
+<table  id="tbTitle_Footer" width="80%" border="0" align="center" cellpadding="0" cellspacing="0" class="pubFooter" >
+<tr><td width="100%" valign="middle" align="left">
+承辦單位：總務處文書組<br>
+如有問題請洽 (02) 2861-0511 轉13111&nbsp;收發室&nbsp;或請 Mail 到 <a href="mailto:chungfy@staff.pccu.edu.tw" class='headerA'>chungfy@staff.pccu.edu.tw</a><br>
+&nbsp;
+</td></tr>
+</table>
+
